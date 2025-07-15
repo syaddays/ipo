@@ -1,0 +1,141 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ ipo.company_name }} IPO - IPO Tracker{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'core:ipo_list' %}">IPOs</a></li>
+                <li class="breadcrumb-item active">{{ ipo.company_name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="row">
+            <!-- Company Info -->
+            <div class="col-md-4 text-center mb-4 mb-md-0">
+                {% if ipo.company_logo %}
+                <img src="{{ ipo.company_logo.url }}" alt="{{ ipo.company_name }}" class="img-fluid mb-3" style="max-height: 150px;">
+                {% else %}
+                <i class="fas fa-building text-muted mb-3" style="font-size: 100px;"></i>
+                {% endif %}
+                <h2 class="h4">{{ ipo.company_name }}</h2>
+                <span class="badge {% if ipo.status == 'upcoming' %}bg-primary
+                            {% elif ipo.status == 'open' %}bg-success
+                            {% elif ipo.status == 'closed' %}bg-warning
+                            {% else %}bg-info{% endif %}">
+                    {{ ipo.get_status_display }}
+                </span>
+            </div>
+
+            <!-- Key Details -->
+            <div class="col-md-8">
+                <div class="row g-4">
+                    <div class="col-sm-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Price Information</h5>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2">
+                                        <small class="text-muted">Price Band</small><br>
+                                        <strong>{{ ipo.price_band }}</strong>
+                                    </li>
+                                    <li class="mb-2">
+                                        <small class="text-muted">Issue Size</small><br>
+                                        <strong>₹{{ ipo.issue_size }} Cr</strong>
+                                    </li>
+                                    {% if ipo.ipo_price %}
+                                    <li>
+                                        <small class="text-muted">Final IPO Price</small><br>
+                                        <strong>₹{{ ipo.ipo_price }}</strong>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">Important Dates</h5>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2">
+                                        <small class="text-muted">Open Date</small><br>
+                                        <strong>{{ ipo.open_date }}</strong>
+                                    </li>
+                                    <li class="mb-2">
+                                        <small class="text-muted">Close Date</small><br>
+                                        <strong>{{ ipo.close_date }}</strong>
+                                    </li>
+                                    {% if ipo.listing_date %}
+                                    <li>
+                                        <small class="text-muted">Listing Date</small><br>
+                                        <strong>{{ ipo.listing_date }}</strong>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if ipo.status == 'listed' %}
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Performance Metrics</h5>
+                                <div class="row g-4">
+                                    <div class="col-sm-4">
+                                        <small class="text-muted">Listing Price</small><br>
+                                        <strong>₹{{ ipo.listing_price }}</strong>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <small class="text-muted">Listing Gain</small><br>
+                                        <strong class="{% if ipo.listing_gain > 0 %}text-success{% else %}text-danger{% endif %}">
+                                            {{ ipo.listing_gain|floatformat:2 }}%
+                                        </strong>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <small class="text-muted">Current Return</small><br>
+                                        <strong class="{% if ipo.current_return > 0 %}text-success{% else %}text-danger{% endif %}">
+                                            {{ ipo.current_return|floatformat:2 }}%
+                                        </strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Documents Section -->
+        {% if ipo.rhp_document or ipo.drhp_document %}
+        <hr>
+        <div class="row mt-4">
+            <div class="col-12">
+                <h5>Documents</h5>
+                <div class="d-flex gap-3">
+                    {% if ipo.rhp_document %}
+                    <a href="{{ ipo.rhp_document.url }}" class="btn btn-outline-primary">
+                        <i class="fas fa-file-pdf me-2"></i>Download RHP
+                    </a>
+                    {% endif %}
+                    {% if ipo.drhp_document %}
+                    <a href="{{ ipo.drhp_document.url }}" class="btn btn-outline-primary">
+                        <i class="fas fa-file-pdf me-2"></i>Download DRHP
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 
